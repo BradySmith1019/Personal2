@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Device.Location;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 
 namespace WelcomeApp
 {
     class Program
     {
 
-        private const string API_KEY = "1cc64de6467eb3d614423cc6341472f1";
+        private const string API_KEY = "74daa3f39f330feb4ead7e52c3cb4352";
 
-        private const string currentURL = "http://api.openweathermap.org/data/2.5/weather?" + "lat=@LAT@&lon=@LON@&mode=xml&units=imperial&APPID=" + API_KEY;
+        //private const string currentURL = "http://api.openweathermap.org/data/2.5/weather?" + "lat=@LAT@&lon=@LON@&mode=xml&units=imperial&APPID=" + API_KEY;
 
-        private const string ForecastURL = "http://api.openweathermap.org/data/2.5/forecast?" + "lat=@LAT@&lon=@LON@&mode=xml&units=imperial&APPID=" + API_KEY;
+        private const string ForecastURL = "https://api.darksky.net/forecast/" + API_KEY + "/@LAT@,@LON@?exclude=alerts,flags,minutely?units=auto";
 
         static GeoCoordinateWatcher watcher = new GeoCoordinateWatcher();
 
@@ -41,8 +42,8 @@ namespace WelcomeApp
 
                 GeoCoordinate coord = watcher.Position.Location;
 
-                string curUrl = currentURL.Replace("@LAT@", coord.Latitude.ToString());
-                curUrl = curUrl.Replace("@LON@", coord.Longitude.ToString());
+                //string curUrl = currentURL.Replace("@LAT@", coord.Latitude.ToString());
+                //curUrl = curUrl.Replace("@LON@", coord.Longitude.ToString());
                 string forUrl = ForecastURL.Replace("@LAT@", coord.Latitude.ToString());
                 forUrl = forUrl.Replace("@LON@", coord.Longitude.ToString());
 
@@ -51,30 +52,49 @@ namespace WelcomeApp
                 {
                     try
                     {
-                        DisplayCurrentTemp(client.DownloadString(curUrl));
+                        DisplayCurrentTemp(client.DownloadString(forUrl));
                     }
 
                     catch (Exception)
                     {
-                        Console.WriteLine("Error retrieving current temperature");
+                        //Console.WriteLine("Error retrieving current temperature");
                     }
-                    try
-                    {
-                        Console.WriteLine("The weather forecast for " + DateTime.Today.DayOfWeek + ", " + DateTime.Now.ToString("MMMM") + " " + DateTime.Today.Day + " is:");
-                        Console.WriteLine();
-                        DisplayForecast(client.DownloadString(forUrl));
-                    }
-
-                    catch (Exception)
-                    {
-                        Console.WriteLine("Error retrieving weather");
-                    }
+                   
                 }
             }
         }
 
         private static void DisplayCurrentTemp(string xml)
         {
+            dynamic response = JsonConvert.DeserializeObject(xml);
+            dynamic currently = response["currently"];
+
+            
+            DateTimeOffset dt = DateTimeOffset.FromUnixTimeSeconds((long)currently["time"]);
+            string currTime = dt.ToLocalTime().ToString();
+            //string[] split = currTime.Split(' ');
+            char degree = (char)176;
+
+            Console.WriteLine("Summary: " + currently["summary"]);
+            Console.WriteLine("Current temperature is " + currently["temperature"] + degree.ToString());
+
+            dynamic hourly = response["hourly"];
+
+            Console.WriteLine("Hourly Summary: " + hourly["summary"]);
+
+            dynamic hourlyData = hourly["data"];
+
+            foreach (dynamic data in hourly["data"])
+            {
+                DateTimeOffset hourTime = DateTimeOffset.FromUnixTimeSeconds((long)hourlyData["time"]);
+                string hourTimes = hourTime.ToLocalTime().ToString();
+                string[] split = currTime.Split(' ');
+
+                Console.WriteLine(split[1] + ":\t" + hourlyData["temperature"] + degree.ToString());
+            }
+
+            
+
             XmlDocument currentDoc = new XmlDocument();
             currentDoc.LoadXml(xml);
 
