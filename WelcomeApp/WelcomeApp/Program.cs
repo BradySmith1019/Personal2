@@ -36,7 +36,7 @@ namespace WelcomeApp
         static void Main(string[] args)
         {
             // Attempts to make the console large enough to display all the information
-            // without having to scroll
+            // without having to scroll]
             try
             {
                 Console.WindowHeight = 56;
