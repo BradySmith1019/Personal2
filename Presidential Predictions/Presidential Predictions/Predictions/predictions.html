@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Election Predictions</title>
+    <link rel="stylesheet" href="styles.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <script src="https://d3js.org/d3.v6.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Presidential Predictions</h1>
+        <div>Brady Smith</div>
+    </header>
+
+    <div class="view">
+        <h2>State Predictions</h2>
+
+        <p>
+            Presidential predictions for different states are shown below thanks to data from <a href="https://projects.fivethirtyeight.com/2020-election-forecast/">FiveThirtyEight</a> as of 9/30/2020.
+        </p>
+
+        <table id="predictionTable">
+            <thead>
+            <tr id="columnHeaders">
+                <th id="stateCol" class="sortable">State <i class="fas no-display"></i></th>
+                <th id="margCol" class="sortable">Margin of Victory <i class="fas no-display"></i></th>
+                <th id="winsCol" class="sortable">Wins <i class="fas no-display"></i></th>
+            </tr>
+            <tr>
+                <td></td>
+                <td><svg id="marginAxis"></svg></td>
+                <td></td>
+            </tr>
+            </thead>
+            <tbody id="predictionTableBody">
+
+            </tbody>
+        </table>
+    </div>
+<script src="js/table.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
